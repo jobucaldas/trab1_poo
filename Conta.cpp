@@ -3,9 +3,7 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
-Conta::Conta(Conta * contas_vet, int clientes, string CPF, string conta, string data, float saldo)
+Conta::Conta(Conta * contas_vet, int clientes, std::string CPF, std::string conta, std::string data, float saldo)
 {
     //ctor
     if (is_valid_conta(conta, contas_vet, clientes)) {
@@ -16,7 +14,7 @@ Conta::Conta(Conta * contas_vet, int clientes, string CPF, string conta, string 
         clientes++;
     }
     else
-        cout << "CPF ou conta invalidos." << '\n';
+        std::cout << "CPF ou conta invalidos." << '\n';
 }
 
 Conta::~Conta()
@@ -24,16 +22,40 @@ Conta::~Conta()
     //dtor
 }
 
-string Conta::getNum(Conta)
+//Metodos get//////////////////////
+std::string Conta::getNum()
 {
     return this->num_conta;
 }
 
-int Conta::is_valid_conta(string conta, Conta * contas_vet, int contas)
+std::string Conta::getCPF()
+{
+    return this->cpf;
+}
+
+std::string Conta::getData()
+{
+    return this->data_abertura;
+}
+
+float Conta::getSaldo()
+{
+    return this->saldo_atual;
+}
+
+//Metodos set///////////////////////
+void Conta::setSaldo(float novoSaldo)
+{
+    this->saldo_atual = novoSaldo;
+}
+
+////////////////////////////////////
+
+int Conta::is_valid_conta(std::string conta, Conta * contas_vet, int contas)
 {
     int flag = 1;
     for (int i = 0; i < contas; i++) {
-        if (conta.compare(getNum(contas_vet[i])))
+        if ( conta.compare( contas_vet[i].getNum() ) )
             flag = 0;
     }
     if (flag)

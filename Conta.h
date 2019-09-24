@@ -2,22 +2,29 @@
 #define CONTA_H
 #include <string>
 
-using namespace std;
-
 class Conta
 {
     public:
-        Conta(Conta *, int, string, string, string, float);
+        Conta(Conta *, int, std::string, std::string, std::string, float);
         ~Conta();
-        int is_valid_conta(string, Conta *, int);
-        string getNum(Conta);
+        int is_valid_conta(std::string, Conta *, int);
+
+        //metodos get
+        std::string getNum();
+        std::string getCPF();
+        std::string getData();
+        float getSaldo();
+
+        //metodos set
+        void setSaldo(float);
+
         static int num_contas;
     protected:
 
     private:
-        string cpf;
-        string num_conta;
-        string data_abertura;
+        std::string cpf;
+        std::string num_conta;
+        std::string data_abertura;
         float saldo_atual;
 };
 

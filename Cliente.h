@@ -5,20 +5,20 @@
 class Cliente {
 public:
 	// Constructors
-	Cliente();
+	Cliente(Cliente*, int*, std::string, std::string, std::string, std::string, std::string);
 	~Cliente();
 
 	// Setters
-	void set_cliente(std::string, std::string, std::string, std::string, std::string);
-	void set_email(std::string);
+	int set_cliente(std::string, std::string, std::string, std::string, std::string, Cliente*, int);
+	int set_email(std::string);
 	void set_telefone(std::string);
 
 	// Getters
-	const void get_nome(std::string);
-	const void get_cpf(std::string);
-	const void get_endereco(std::string);
-	const void get_telefone(std::string);
-	const void get_email(std::string);
+	const std::string get_nome();
+	const std::string get_cpf();
+	const std::string get_endereco();
+	const std::string get_telefone();
+	const std::string get_email();
 
 private:
 	// Variables
@@ -29,13 +29,13 @@ private:
 	std::string email;
 
 	// Private Setters
+	int set_cpf(std::string, Cliente*, int);
 	void set_nome(std::string);
-	void set_cpf(std::string);
 	void set_endereco(std::string);
 
 	// Validators
 	const bool is_valid_email(std::string);
-	const bool is_valid_cpf();
+	const bool is_valid_cpf(std::string, Cliente*, int);
 };
 
 #endif /* CLIENTE_H_ */

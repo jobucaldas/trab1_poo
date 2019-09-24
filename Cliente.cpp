@@ -9,7 +9,7 @@ Cliente::Cliente(Cliente* clientes, int* n, std::string nome, std::string cpf, s
 }
 
 Cliente::~Cliente() {
-
+	
 }
 
 /* -----Setters------ */

@@ -27,7 +27,7 @@ private:
 	std::string endereco;
 	std::string telefone;
 	std::string email;
-	int* n;
+	static int n;
 	Cliente* clientes;
 
 	// Private Setters

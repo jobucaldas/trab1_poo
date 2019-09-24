@@ -5,7 +5,7 @@
 class Conta
 {
     public:
-        Conta(Conta *, int, std::string, std::string, std::string, float);
+        Conta(Conta *, int, std::string, std::string, int, int, int float);
         ~Conta();
         int is_valid_conta(std::string, Conta *, int);
 
@@ -19,6 +19,10 @@ class Conta
         void setSaldo(float);
 
         static int num_contas;
+
+        bool is_valid_data();
+        
+
     protected:
 
     private:
@@ -26,6 +30,9 @@ class Conta
         std::string num_conta;
         std::string data_abertura;
         float saldo_atual;
+        int dia, mes, ano;
+        void inttostr();
+        bool bissexto();
 };
 
 #endif // CONTA_H

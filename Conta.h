@@ -7,9 +7,10 @@ using namespace std;
 class Conta
 {
     public:
-        Conta(string, string, string, float, int);
+        Conta(Conta *, int, string, string, string, float);
         ~Conta();
-        int is_valid_conta(string, static int);
+        int is_valid_conta(string, Conta *, int);
+        string getNum(Conta);
         static int num_contas;
     protected:
 

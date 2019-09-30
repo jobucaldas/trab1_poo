@@ -1,19 +1,35 @@
 #include "Cliente.h"
 
-Cliente::Cliente(Cliente* clientes, int* n, std::string nome, std::string cpf, std::string endereco, std::string telefone = "", std::string email = "") {
-	this->clientes = clientes;
-	this->n        = n;
+Cliente::Cliente(Cliente* clientes, int* n, std::string nome, std::string cpf, std::string endereco, std::string telefone, std::string email) {
 
-	if(this->set_cliente(nome, cpf, endereco, telefone, email))
-		this->~Cliente();
 }
 
 Cliente::~Cliente() {
-	
+
+}
+
+/* -----Validators------ */
+const bool Cliente::is_valid_email(std::string email){
+	std::string test1 = "@", test2 = ".com";
+	return (email.find(test1)!=std::string::npos && email.find(test2)!=std::string::npos)?true:false;
+}
+
+const bool Cliente::is_valid_cpf(std::string cpf, Cliente* clientes, int n){
+	int i, repeated;
+
+	// Finds if cpf is already used
+	for(i=0;i<n;i++)
+		if(clientes[i].cpf.find(cpf)){
+			repeated = 1;
+			break;
+		} else
+			repeated = 0;
+
+	return (cpf.length()==11 && repeated)?true:false;
 }
 
 /* -----Setters------ */
-int Cliente::set_cliente(std::string nome, std::string cpf, std::string endereco, std::string telefone, std::string email){
+int Cliente::set_cliente(std::string nome, std::string cpf, std::string endereco, std::string telefone, std::string email, Cliente* clientes, int n){
 	/*
 	 *  - Exit Table -
 	 *  1 - CPF   Error
@@ -24,7 +40,7 @@ int Cliente::set_cliente(std::string nome, std::string cpf, std::string endereco
 	this->set_endereco(endereco);
 	this->set_telefone(telefone);
 
-	if(this->set_cpf(cpf)){
+	if(this->set_cpf(cpf, clientes, n)){
 		return 1;
 	}
 	if(this->set_email(email)){
@@ -38,9 +54,9 @@ void Cliente::set_nome(std::string nome){
 	this->nome = nome;
 }
 
-int Cliente::set_cpf(std::string cpf){
+int Cliente::set_cpf(std::string cpf, Cliente* clientes, int n){
 	// Error code if given cpf is not valid
-	if(!this->is_valid_cpf(cpf))
+	if(!this->is_valid_cpf(cpf, clientes, n))
 		return 1;
 
 	this->cpf = cpf;
@@ -82,24 +98,4 @@ const std::string Cliente::get_telefone(){
 
 const std::string Cliente::get_email(){
 	return this->email;
-}
-
-/* -----Validators------ */
-const bool Cliente::is_valid_email(std::string email){
-	std::string test1 = "@", test2 = ".";
-	return (email.find(test1)!=std::string::npos && email.find(test2)!=std::string::npos);
-}
-
-const bool Cliente::is_valid_cpf(std::string cpf){
-	int i, repeated;
-
-	// Finds if cpf is already used
-	for(i=0;i<n;i++)
-		if(clientes[i].cpf.compare(cpf)){
-			repeated = 1;
-			break;
-		} else
-			repeated = 0;
-
-	return (cpf.length()==11 && repeated);
 }

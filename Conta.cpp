@@ -2,24 +2,37 @@
 #include "Cliente.h"
 #include <iostream>
 #include <string>
+#include <iomanip>
+#include <stdlib.h>
+#include <sstream>
 
-Conta::Conta(Conta * contas_vet, int clientes, std::string CPF, std::string conta, int dia, int mes, int ano float saldo)
+int Conta::num_contas = 0;
+
+Conta::Conta(std::string CPF, std::string nconta,
+            int dia, int mes, int ano, float saldo)
 {
     //ctor
-    if (is_valid_conta(conta, contas_vet, clientes)) {
-        cpf = CPF;
-        num_conta = conta;
-        saldo_atual = saldo;
+    if ((is_valid_data(dia, mes, ano) == true) ) {
         this->dia = dia;
         this->mes = mes;
         this->ano = ano;
-        inttostr();
-        if (is_valid_data == false)
-            std::cout << "Data inválida";
-        clientes++;
+        intToStr();
+        this->cpf = CPF;
+        this->num_conta = nconta;
+        this->saldo_atual = saldo;
+        this->cabeca = (Lancamentos *) malloc(sizeof(Lancamentos));
+        this->cabeca->prox = NULL;
+        num_contas++;
+        std::cout << "Conta criada com sucesso!" << '\n'
+                  << "CPF: " << this->getCPF() << '\n'
+                  << "Numero da conta: " << this->getNum() << '\n'
+                  << "Saldo: " << this->getSaldo() << '\n'
+                  << "Data de abertura: " << this->getData() << "\n\n";
     }
-    else
-        std::cout << "CPF ou conta invalidos." << '\n';
+    if (is_valid_data(dia, mes, ano) == false) {
+        std::cout << "Data invalida. A conta sera deletada." << '\n';
+        this->~Conta();
+    }
 }
 
 Conta::~Conta()
@@ -47,47 +60,69 @@ float Conta::getSaldo()
 {
     return this->saldo_atual;
 }
+Lancamentos * Conta::getCabeca()
+{
+    return this->cabeca;
+}
+
+void Conta::printSaldo()
+{
+    std::cout << "Saldo atual: " << std::fixed << std::setprecision(2)
+              << this->getSaldo() << "\n\n";
+}
+
+void Conta::getLancamentos(Lancamentos * cabeca)
+{
+    Lancamentos * aux = cabeca->prox;
+    while (aux != NULL) {
+        std::cout << "Lancamento: " << std::fixed << std::setprecision(2)
+                  << aux->valor << '\n';
+        aux = aux->prox;
+    }
+    std::cout << '\n';
+}
 
 //Metodos set///////////////////////
-void Conta::setSaldo(float novoSaldo)
+void Conta::updateSaldo(float novoSaldo, int operacao)
 {
-    this->saldo_atual = novoSaldo;
+    //operacao = 1: credito, operacao = 2: debito
+    if (operacao == 1 || (operacao == 2 && this->saldo_atual + novoSaldo >= 0)) {
+        novoLancamento(this->cabeca, novoSaldo, operacao);
+        this->saldo_atual = this->saldo_atual + novoSaldo;
+    }
 }
 
 ////////////////////////////////////
 
-int Conta::is_valid_conta(std::string conta, Conta * contas_vet, int contas)
+void Conta::novoLancamento(Lancamentos * head, float saldo, int operacao)
 {
-    int flag = 1;
-    for (int i = 0; i < contas; i++) {
-        if ( conta.compare( contas_vet[i].getNum() ) )
-            flag = 0;
+    //operacao = 1: credito, operacao = 2: debito
+    if (operacao == 1 || (operacao == 2 && this->saldo_atual + saldo >= 0)) {
+        Lancamentos * aux = cabeca;
+        Lancamentos * novo = (Lancamentos *) malloc(sizeof(Lancamentos));
+        novo->valor = saldo;
+        while (aux->prox != NULL)
+            aux = aux->prox;
+        aux->prox = novo;
     }
-    if (flag)
-        return 1;
-    return 0;
 }
 
-void Conta::inttostr() {
+void Conta::intToStr() {
     std::stringstream change;
-    std::string aux1, aux2, aux3;
-    change << this->dia;
-    change >> aux1;
-    change << this->mes;
-    change >> aux2;
-    change << this->ano;
-    change >> aux3;
-    this->data_abertura = aux1 + "/" + aux2 + "/" + aux3;
+    std::string aux;
+    change << this->dia << "/" << this->mes << "/" << this->ano;
+    change >> aux;
+    this->data_abertura = aux;
 }
 
-bool bissexto () {
+bool Conta::bissexto () {
     if ((ano % 400 == 0 || ano % 100 != 0) && ano % 4 == 0)
         return true;
     return false;
 }
 
-bool Conta::is_valid_data() {
-    if (this->mes < 1 || this->mes > 12){
+bool Conta::is_valid_data(int dia, int mes, int ano) {
+    if (mes < 1 || mes > 12){
         return false;
     }
     switch (mes) {

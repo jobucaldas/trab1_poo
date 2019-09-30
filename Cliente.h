@@ -9,7 +9,7 @@ public:
 	~Cliente();
 
 	// Setters
-	int set_cliente(std::string, std::string, std::string, std::string, std::string);
+	int set_cliente(std::string, std::string, std::string, std::string, std::string, Cliente*, int);
 	int set_email(std::string);
 	void set_telefone(std::string);
 
@@ -27,17 +27,15 @@ private:
 	std::string endereco;
 	std::string telefone;
 	std::string email;
-	static int n;
-	Cliente* clientes;
 
 	// Private Setters
-	int set_cpf(std::string);
+	int set_cpf(std::string, Cliente*, int);
 	void set_nome(std::string);
 	void set_endereco(std::string);
 
 	// Validators
 	const bool is_valid_email(std::string);
-	const bool is_valid_cpf(std::string);
+	const bool is_valid_cpf(std::string, Cliente*, int);
 };
 
 #endif /* CLIENTE_H_ */

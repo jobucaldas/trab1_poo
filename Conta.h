@@ -12,13 +12,13 @@ typedef struct lancamentos {
 class Conta
 {
     public:
-        Conta(std::string, std::string, int, int, int, float);
+        Conta(const std::string, const std::string, const std::string, float);
         ~Conta();
 
         //metodos get
-        std::string getNum();
-        std::string getCPF();
-        std::string getData();
+        std::string getNum() const;
+        std::string getCPF() const;
+        std::string getData() const;
         float getSaldo();
         Lancamentos * getCabeca();
         void getLancamentos(Lancamentos *);
@@ -29,17 +29,13 @@ class Conta
 
         void novoLancamento(Lancamentos *, float, int);
         static int num_contas;
-        bool is_valid_data(int, int, int);
 
     private:
-        std::string cpf;
-        std::string num_conta;
-        std::string data_abertura;
+        const std::string cpf;
+        const std::string num_conta;
+        const std::string data_abertura;
         float saldo_atual;
         Lancamentos * cabeca;
-        int dia, mes, ano;
-        void intToStr();
-        bool bissexto();
 };
 
 #endif // CONTA_H

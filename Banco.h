@@ -11,10 +11,15 @@ typedef struct contas {
     struct contas *prox;
 } listaContas;
 
+typedef struct clientes {
+    Cliente *cliente_atual;
+    struct clientes *prox;
+} listaClientes;
+
 class Banco
 {
     public:
-        Banco(int);
+        Banco();
         ~Banco();
         void add_cliente();
         void add_conta();
@@ -23,11 +28,16 @@ class Banco
 
     private:
         int n, m;
-        Cliente *clientes;
+        listaClientes *clientes;
         listaContas *contas;
 
         //validators//
         bool is_valid_numConta(std::string);
+        bool is_valid_data(int, int, int);
+
+        //auxiliary functions
+        std::string intToStr(int, int, int);
+        bool bissexto(int);
 };
 
 #endif /* BANCO_H_ */

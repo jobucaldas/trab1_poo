@@ -1,33 +1,39 @@
 #ifndef CONTA_H
 #define CONTA_H
+
 #include <iostream>
 #include <string>
 #include <stdlib.h>
 
 typedef struct lancamentos {
     float valor;
-    struct lancamentos * prox;
+    struct lancamentos *prox;
 } Lancamentos;
 
 class Conta
 {
     public:
+        /* Construtor e destrutor */
         Conta(const std::string, const std::string, const std::string, float);
         ~Conta();
 
-        //metodos get
+        /* Métodos get */
         std::string getNum() const;
         std::string getCPF() const;
         std::string getData() const;
         float getSaldo();
-        Lancamentos * getCabeca();
-        void getLancamentos(Lancamentos *);
+        Lancamentos *getCabeca(); //Lista de lançamentos;
+        void getLancamentos(Lancamentos *); //Extrato da conta;
         void printSaldo();
 
-        //metodos set
-        void updateSaldo(float, int);
+        /* Método toString */
+        std::string toString() const;
 
+        /* Métodos set */
+        void updateSaldo(float, int);
         void novoLancamento(Lancamentos *, float, int);
+
+        /* Contador para número de contas */
         static int num_contas;
 
     private:
@@ -35,7 +41,7 @@ class Conta
         const std::string num_conta;
         const std::string data_abertura;
         float saldo_atual;
-        Lancamentos * cabeca;
+        Lancamentos *cabeca; //Cabeça da lista de lançamentos;
 };
 
 #endif // CONTA_H

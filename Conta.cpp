@@ -6,30 +6,33 @@
 #include <stdlib.h>
 #include <sstream>
 
+/* Contador para número de contas */
 int Conta::num_contas = 0;
 
+/* Construtor, inicia lista de lançamentos,
+   inicia parametros,
+   incrementa contador;  */
 Conta::Conta(std::string CPF, std::string nconta,
             std::string data, float saldo) : cpf(CPF),
             num_conta(nconta), data_abertura(data)
 {
-    //ctor
+
     this->saldo_atual = saldo;
+
+    /* Cria lista de lançamentos deste cliente */
     this->cabeca = (Lancamentos *) malloc(sizeof(Lancamentos));
     this->cabeca->prox = NULL;
+
     num_contas++;
-    std::cout << "Conta criada com sucesso!" << '\n'
-              << "CPF: " << this->getCPF() << '\n'
-              << "Numero da conta: " << this->getNum() << '\n'
-              << "Saldo: " << this->getSaldo() << '\n'
-              << "Data de abertura: " << this->getData() << "\n\n";
+
+    std::cout << "Conta criada com sucesso!" << std::endl;
 }
 
-Conta::~Conta()
-{
-    //dtor
+Conta::~Conta(){
+    num_contas--;
 }
 
-//Metodos get//////////////////////
+/* Getters */
 std::string Conta::getNum() const
 {
     return this->num_conta;
@@ -49,6 +52,7 @@ float Conta::getSaldo()
 {
     return this->saldo_atual;
 }
+
 Lancamentos * Conta::getCabeca()
 {
     return this->cabeca;
@@ -59,40 +63,52 @@ void Conta::printSaldo()
     std::cout << "Saldo atual: " << std::fixed << std::setprecision(2)
               << this->getSaldo() << "\n\n";
 }
-
-void Conta::getLancamentos(Lancamentos * cabeca)
+/* Mostra na tela histórico de lançamentos(extrato) */
+void Conta::getLancamentos(Lancamentos *cabeca)
 {
-    Lancamentos * aux = cabeca->prox;
+    Lancamentos *aux = cabeca->prox;
     while (aux != NULL) {
         std::cout << "Lancamento: " << std::fixed << std::setprecision(2)
                   << aux->valor << '\n';
         aux = aux->prox;
     }
-    std::cout << '\n';
+    std::cout << "Saldo final: " << std::fixed << std::setprecision(2) << this->saldo_atual;
+    std::cout << std::endl;
 }
 
-//Metodos set///////////////////////
-void Conta::updateSaldo(float novoSaldo, int operacao)
+/* Métodos set */
+void Conta::updateSaldo(float valor, int operacao)
 {
-    //operacao = 1: credito, operacao = 2: debito
-    if (operacao == 1 || (operacao == 2 && this->saldo_atual + novoSaldo >= 0)) {
-        novoLancamento(this->cabeca, novoSaldo, operacao);
-        this->saldo_atual = this->saldo_atual + novoSaldo;
+    //operacao = 1: credito, operacao = 2: debito.
+    if (operacao == 1 || (operacao == 2 && this->saldo_atual - valor >= 0)) {
+        novoLancamento(this->cabeca, valor, operacao);
+        this->saldo_atual = this->saldo_atual - valor;
     }
 }
 
-////////////////////////////////////
+/* Atualiza a lista de lancamentos */
 
-void Conta::novoLancamento(Lancamentos * head, float saldo, int operacao)
+void Conta::novoLancamento(Lancamentos *head, float valor, int operacao)
 {
     //operacao = 1: credito, operacao = 2: debito
-    if (operacao == 1 || (operacao == 2 && this->saldo_atual + saldo >= 0)) {
-        Lancamentos * aux = cabeca;
-        Lancamentos * novo = (Lancamentos *) malloc(sizeof(Lancamentos));
-        novo->valor = saldo;
+    if (operacao == 1 || (operacao == 2 && this->saldo_atual - valor >= 0)) {
+        Lancamentos *aux = cabeca;
+        Lancamentos *novo = (Lancamentos *) malloc(sizeof(Lancamentos));
+        novo->valor = valor;
         while (aux->prox != NULL)
             aux = aux->prox;
         aux->prox = novo;
+        novo->prox = NULL;
     }
 }
 
+/* toString */
+
+std::string Conta::toString() const {
+    std::stringstream format;
+    format << "Apresentando dados da conta..." << std::endl
+        << "Número da conta: " << this->num_conta << std::endl
+        << "CPF: " << this->cpf << std::endl << "Data de abertura: " << this->data_abertura
+        << std::endl << "Saldo atual: " << this->saldo_atual << std::endl;
+    return format.str();
+}

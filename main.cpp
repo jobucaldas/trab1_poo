@@ -11,9 +11,9 @@ using namespace std;
 int main()
 {
     Banco banco;
+    banco.add_cliente();
     banco.add_conta();
-    banco.add_conta();
-    banco.add_conta();
+
     std::cout << Conta::num_contas;
     return 0;
 }

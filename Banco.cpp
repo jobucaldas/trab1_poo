@@ -66,9 +66,10 @@ void Banco::add_conta()
     //Cria uma conta nova(se for válido);
     if (is_valid_numConta(numero_conta)) {
         do {
-            std::cout << "Digite os dados da conta: " << "\n" << "CPF (já cadastrado): ";
+            std::cout << "Digite os dados da conta: " << "\n" << "CPF (ja cadastrado): ";
             std::cin >> cpf;
         } while (!buscaClientecpf(cpf));
+
         do {
             std::cout << "Data de abertura, no formato: 'dia mes ano': " << "\n";
             std::cin >> dia >> mes >> ano;
@@ -98,26 +99,36 @@ void Banco::add_cliente()
         aux = aux->prox;
     }
     std::cout << "Cadastrando cliente..." << std::endl << "Insira dados, CPF: ";
-    std::cin >> cpf;
-    if (is_valid_cpf(cpf)) {
-        std::cout << "Email: ";
-        std::cin >> email;
-        if(is_valid_email(email)){
-            std::cout << "Nome: ";
-            std::getline(std::cin, nome);
-            std::cout << "Telefone: ";
-            std::cin >> telefone;
-            std::cout << "Endereço: ";
-            std::cin >> endereco;
-            novo->cliente_atual = new Cliente(nome, cpf, endereco, telefone, email);
-            this->clientes->prox = novo;
-            novo->prox = NULL;
-            contcliente++;
-        } else
-            std::cout << "Email inválido!!" << std::endl;
-    }
-    else
-        std::cout << "CPF ja utilizado. Tente novamente." << "\n";
+	do {
+		std::cin >> cpf;
+		if (!is_valid_cpf(cpf))
+			std::cout << "CPF ja utilizado. Tente novamente." << "\n";
+	} while (!is_valid_cpf(cpf));
+	//std::cout << cpf<<std::endl;
+    std::cout << "Email: ";
+	do {
+		std::cin >> email;
+		if (!is_valid_email(email))
+			std::cout << "Email inválido!! Tente novamente" << std::endl;
+	} while (!is_valid_email(email));
+	//std::cout << email << std::endl;
+	std::cout << "Nome: ";
+	scanf("\n");
+    std::getline(std::cin, nome);
+	//std::cout << nome<<std::endl;
+    std::cout << "Telefone: ";
+	scanf("\n");
+    std::cin >> telefone;
+	//std::cout << telefone<<std::endl;
+    std::cout << "Endereço: ";
+	scanf("\n");
+	std::getline(std::cin, endereco);
+	//std::cout << endereco<<std::endl;
+    novo->cliente_atual = new Cliente(nome, cpf, endereco, telefone, email);
+    this->clientes->prox = novo;
+    novo->prox = NULL;
+    contcliente++;
+
 }
 
 void Banco::rmv_cliente(listaClientes *retirar) {
@@ -234,8 +245,10 @@ bool Banco::bissexto (int ano) {
 /* Busca cpf na lista de clientes e retorna 1 se encontrou */
 int Banco::buscaClientecpf(std::string cpf) {
     listaClientes *aux = clientes;
-    while (aux != NULL && aux->cliente_atual->get_cpf() != cpf)
-        aux = aux->prox;
+	while (aux != NULL && aux->cliente_atual->get_cpf() != cpf) {
+		aux = aux->prox;
+		std::cout << "poolinfitino?\n";
+	}
     if (aux == NULL)
         return 0;
     return 1;

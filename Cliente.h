@@ -24,7 +24,7 @@ public:
 	const std::string toString();
 
 	//Static for count number of clients;
-	static int num_clients;
+	static int num_clientes;
 
 private:
 	// Variables

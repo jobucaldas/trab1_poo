@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <new>
+#include <iomanip>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -34,12 +35,12 @@ Banco::~Banco() {
 
     /* Libera todos os clientes */
     listaClientes *aux1 = clientes->prox;
-    listaContas *remover1;
-    remover1 = (listaContas *) malloc(sizeof(listaContas));
-    while (aux != NULL) {
-        remover = aux;
-        aux = remover->prox;
-        free(remover);
+    listaClientes *remover1;
+    remover1 = (listaClientes *) malloc(sizeof(listaClientes));
+    while (aux1 != NULL) {
+        remover1 = aux1;
+        aux1 = remover1->prox;
+        free(remover1);
         contcliente--;
     }
     contas->prox = NULL;
@@ -52,7 +53,7 @@ void Banco::add_conta()
     //Guarda conta no fim da lista;
     listaContas *aux = this->contas;
     listaContas *novo = (listaContas *) malloc(sizeof(listaContas));
-    while (aux != NULL) {
+    while (aux->prox != NULL) {
         aux = aux->prox;
     }
     //Inicializa variáveis da conta;
@@ -79,7 +80,7 @@ void Banco::add_conta()
         std::cout << "Saldo inicial:" << "\n";
         std::cin >> saldo;
         novo->conta_atual = new Conta(cpf, numero_conta, data, saldo);
-        this->contas->prox = novo;
+        aux->prox = novo;
         novo->prox = NULL;
         contconta++;
     }
@@ -95,21 +96,21 @@ void Banco::add_cliente()
     /* Avança para a última posição da lista de clientes */
     listaClientes *aux = this->clientes;
     listaClientes *novo = (listaClientes *) malloc(sizeof(listaClientes));
-    while (aux != NULL) {
+    while (aux->prox != NULL) {
         aux = aux->prox;
     }
-    std::cout << "Cadastrando cliente..." << std::endl << "Insira dados, CPF: ";
+    std::cout << "Cadastrando cliente..." << std::endl << "Insira dados:" << '\n' << "CPF: ";
 	do {
 		std::cin >> cpf;
 		if (!is_valid_cpf(cpf))
-			std::cout << "CPF ja utilizado. Tente novamente." << "\n";
+			std::cout << "CPF invalido ou ja utilizado. Tente novamente." << '\n';
 	} while (!is_valid_cpf(cpf));
 	//std::cout << cpf<<std::endl;
     std::cout << "Email: ";
 	do {
 		std::cin >> email;
 		if (!is_valid_email(email))
-			std::cout << "Email inválido!! Tente novamente" << std::endl;
+			std::cout << "Email invalido!! Tente novamente" << std::endl;
 	} while (!is_valid_email(email));
 	//std::cout << email << std::endl;
 	std::cout << "Nome: ";
@@ -120,15 +121,33 @@ void Banco::add_cliente()
 	scanf("\n");
     std::cin >> telefone;
 	//std::cout << telefone<<std::endl;
-    std::cout << "Endereço: ";
+    std::cout << "Endereco: ";
 	scanf("\n");
 	std::getline(std::cin, endereco);
 	//std::cout << endereco<<std::endl;
     novo->cliente_atual = new Cliente(nome, cpf, endereco, telefone, email);
-    this->clientes->prox = novo;
+    aux->prox = novo;
     novo->prox = NULL;
     contcliente++;
 
+}
+
+void Banco::get_clientes()
+{
+    listaClientes *aux = this->clientes->prox;
+    while (aux != NULL) {
+        std::cout << aux->cliente_atual->toString() << "\n";
+        aux = aux->prox;
+    }
+}
+
+void Banco::get_contas()
+{
+    listaContas *aux = this->contas->prox;
+    while (aux != NULL) {
+        std::cout << aux->conta_atual->toString() << "\n";
+        aux = aux->prox;
+    }
 }
 
 void Banco::rmv_cliente(listaClientes *retirar) {
@@ -174,7 +193,7 @@ int Banco::getqtdconta() {
 std::string Banco::toString() const{
     std::stringstream format;
     format << "Quantidade de clientes cadastrados no banco: " << this->contcliente <<
-        std::endl << "Quatidade de contas cadastradas: " << this->contconta << std::endl;
+        std::endl << "Quantidade de contas cadastradas: " << this->contconta << std::endl;
     return format.str();
 }
 
@@ -206,6 +225,7 @@ bool Banco::is_valid_data(int dia, int mes, int ano) {
             }
             return (dia > 0 && dia < 29) ? true : false;
     }
+    return false;
 }
 
 const bool Banco::is_valid_email(std::string email){
@@ -218,7 +238,7 @@ const bool Banco::is_valid_cpf(std::string cpf){
     listaClientes *aux = clientes;
     aux = aux->prox; //Pula o nó cabeça da lista;
 	// Procura se há algum cpf repetido na lista;
-	for(i = 0; i < Cliente::num_clients || aux != NULL; i++){
+	for(i = 0; i < Cliente::num_clientes || aux != NULL; i++){
         if(aux->cliente_atual->get_cpf() == cpf){
 			repeated = 1;
 			break;
@@ -244,13 +264,60 @@ bool Banco::bissexto (int ano) {
 }
 /* Busca cpf na lista de clientes e retorna 1 se encontrou */
 int Banco::buscaClientecpf(std::string cpf) {
-    listaClientes *aux = clientes;
-	while (aux != NULL && aux->cliente_atual->get_cpf() != cpf) {
+    listaClientes *aux = clientes->prox; //pula o nó cabeça da lista
+    //procura se o cpf inserido está cadastrado
+	while (aux != NULL && aux->cliente_atual->get_cpf().compare(cpf) != 0) {
 		aux = aux->prox;
-		std::cout << "poolinfitino?\n";
 	}
-    if (aux == NULL)
+    if (aux == NULL) {
+        std::cout << "CPF nao encontrado." << '\n';
         return 0;
+    }
     return 1;
 }
 
+int Banco::buscaContaNum(std::string numeroBusca) {
+    listaContas * aux = contas->prox;
+    int i = 0;
+    while (aux != NULL && aux->conta_atual->getNum().compare(numeroBusca) != 0) {
+        aux = aux->prox;
+        i++;
+    }
+    if (aux == NULL) {
+        std::cout << "Conta nao encontrada." << '\n';
+        return 0;
+    }
+    //retorna o numero de passos, a partir do inicio, até encontrar a conta
+    //com o numero em questão
+    return (i+1);
+}
+
+void Banco::novoLancamento(std::string numeroBusca, float valor, int operacao)
+{
+    listaContas * aux = this->contas;
+    for (int i = 0; i < this->buscaContaNum(numeroBusca); i++) {
+        aux = aux->prox;
+    }
+    aux->conta_atual->novoLancamento(aux->conta_atual->getCabeca(), valor, operacao);
+}
+
+void Banco::get_lancamento(std::string numeroBusca) {
+    listaContas * aux = this->contas;
+    int numeroIteracoes = this->buscaContaNum(numeroBusca);
+    for (int i = 0; i < numeroIteracoes; i++) {
+        aux = aux->prox;
+    }
+    if (aux != contas)
+        aux->conta_atual->getLancamentos(aux->conta_atual->getCabeca());
+}
+
+void Banco::get_montante()
+{
+    listaContas * aux = contas->prox;
+    float montante = 0;
+    while (aux != NULL) {
+        montante += aux->conta_atual->getSaldo();
+        aux = aux->prox;
+    }
+    std::cout << "Montante do banco: " << std::fixed << std::setprecision(2) << montante << '\n';
+}

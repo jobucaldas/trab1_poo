@@ -92,6 +92,7 @@ void Conta::novoLancamento(Lancamentos *head, float valor, int operacao)
 {
     //operacao = 1: credito, operacao = 2: debito
     if (operacao == 1 || (operacao == 2 && this->saldo_atual - valor >= 0)) {
+        this->saldo_atual -= valor;
         Lancamentos *aux = cabeca;
         Lancamentos *novo = (Lancamentos *) malloc(sizeof(Lancamentos));
         novo->valor = valor;
@@ -107,8 +108,8 @@ void Conta::novoLancamento(Lancamentos *head, float valor, int operacao)
 std::string Conta::toString() const {
     std::stringstream format;
     format << "Apresentando dados da conta..." << std::endl
-        << "Número da conta: " << this->num_conta << std::endl
+        << "Numero da conta: " << this->num_conta << std::endl
         << "CPF: " << this->cpf << std::endl << "Data de abertura: " << this->data_abertura
-        << std::endl << "Saldo atual: " << this->saldo_atual << std::endl;
+        << std::endl << "Saldo atual: " << std::fixed << std::setprecision(2) << this->saldo_atual << std::endl;
     return format.str();
 }

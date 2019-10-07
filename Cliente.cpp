@@ -1,17 +1,17 @@
 #include "Cliente.h"
 #include <sstream>
 
-int Cliente::num_clients = 0;
+int Cliente::num_clientes = 0;
 
 /*
 */
 Cliente::Cliente(std::string nome, std::string cpf, std::string endereco, std::string telefone, std::string email) {
-    num_clients++;
+    num_clientes++;
     set_cliente(nome, cpf, endereco, telefone, email);
 }
 
 Cliente::~Cliente() {
-    num_clients--;
+    num_clientes--;
 }
 
 /* -----Setters------ */
@@ -69,7 +69,7 @@ const std::string Cliente::toString() {
     std::stringstream create;
     create << "Nome: "<< this->nome << std::endl << "CPF: " << this->cpf << std::endl
     << "Endereco: " << this->endereco << std::endl << "Telefone: " << this->telefone
-    << std::endl << "Email: " << this->email;
+    << std::endl << "Email: " << this->email << std::endl;
     return create.str();
 }
 

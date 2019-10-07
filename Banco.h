@@ -30,9 +30,20 @@ class Banco
 
         /* Método toString */
         std::string toString() const;
+
         /* getters para membros static */
         static int getqtdcliente();
         static int getqtdconta();
+
+        /* getters para listas */
+        void get_clientes();
+        void get_contas();
+        void get_lancamento(std::string);
+        void get_montante();
+
+        //procura uma conta para fazer lancamento
+        void novoLancamento(std::string, float, int);
+
     private:
         listaClientes *clientes; //Lista de clientes;
         listaContas *contas; //Lista de contas;
@@ -52,6 +63,7 @@ class Banco
         std::string intToStr(int, int, int);
         bool bissexto(int);
         int buscaClientecpf(std::string); //Busca um cpf de cliente cadastrado;
+        int buscaContaNum(std::string); //Busca a conta com o numero respectivo;
 };
 
 #endif /* BANCO_H_ */

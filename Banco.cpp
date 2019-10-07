@@ -106,16 +106,16 @@ void Banco::add_cliente()
 			std::cout << "CPF invalido ou ja utilizado. Tente novamente." << '\n';
 	} while (!is_valid_cpf(cpf));
 	//std::cout << cpf<<std::endl;
-    std::cout << "Email: ";
+	std::cout << "Nome: ";
+	scanf("\n");
+    std::getline(std::cin, nome);
+    //std::cout << email << std::endl;
+	std::cout << "Email: ";
 	do {
 		std::cin >> email;
 		if (!is_valid_email(email))
 			std::cout << "Email invalido!! Tente novamente" << std::endl;
 	} while (!is_valid_email(email));
-	//std::cout << email << std::endl;
-	std::cout << "Nome: ";
-	scanf("\n");
-    std::getline(std::cin, nome);
 	//std::cout << nome<<std::endl;
     std::cout << "Telefone: ";
 	scanf("\n");
@@ -141,6 +141,31 @@ void Banco::get_clientes()
     }
 }
 
+void Banco::set_cliente(std::string busca)
+{
+    int numPassos = buscaClientecpf(busca);
+    listaClientes * aux = this->clientes;
+    for (int i = 0; i < numPassos; i++)
+        aux = aux->prox;
+    std::string nome, endereco, telefone, email;
+    std::cout << "Digite os dados do cliente: " << '\n'
+              << "Nome: ";
+    scanf("\n");
+    std::getline(std::cin, nome);
+    do {
+        std::cout << "Email: ";
+        std::cin >> email;
+        if (is_valid_email(email) == false)
+            std::cout << "Email invalido." << '\n';
+    } while (is_valid_email(email) == false);
+    std::cout << "Telefone: ";
+    std::cin >> telefone;
+    std::cout << "Endereco: ";
+    scanf("\n");
+    std::getline(std::cin, endereco);
+    aux->cliente_atual->set_cliente(nome, busca, endereco, telefone, email);
+}
+
 void Banco::get_contas()
 {
     listaContas *aux = this->contas->prox;
@@ -150,10 +175,10 @@ void Banco::get_contas()
     }
 }
 
-void Banco::rmv_cliente(listaClientes *retirar) {
+void Banco::rmv_cliente(std::string retirar) {
     listaClientes *atual = clientes->prox, *anterior = clientes, *morta;
 
-    while (atual != NULL && atual != retirar) {
+    while (atual != NULL && atual->cliente_atual->get_cpf().compare(retirar) != 0) {
         anterior = atual;
         atual = atual->prox;
     }
@@ -166,10 +191,10 @@ void Banco::rmv_cliente(listaClientes *retirar) {
     }
 }
 
-void Banco::rmv_conta(listaContas *retirar) {
+void Banco::rmv_conta(std::string retirar) {
     listaContas *atual = contas->prox, *anterior = contas, *morta;
 
-    while (atual != NULL && atual != retirar) {
+    while (atual != NULL && atual->conta_atual->getNum().compare(retirar) != 0) {
         anterior = atual;
         atual = atual->prox;
     }
@@ -181,6 +206,30 @@ void Banco::rmv_conta(listaContas *retirar) {
         contconta--;
     }
 }
+
+//remove as contas vinculadas a um cliente
+void Banco::rmv_conta_cpf(std::string retirar) {
+    listaContas *atual = contas->prox, *anterior = contas, *morta;
+    int flag;
+    while (atual != NULL) {
+        flag = 0;
+        if (atual->conta_atual->getCPF().compare(retirar) == 0 && atual != NULL) {
+            morta = (listaContas *) malloc (sizeof(listaContas));
+            morta = atual;
+            anterior->prox = morta->prox;
+            free(morta);
+            contconta--;
+            atual = anterior->prox;
+            flag = 1;
+        }
+        //verifica se ja excluiu uma conta
+        if (!flag) {
+            anterior = atual;
+            atual = atual->prox;
+        }
+    }
+}
+
 /* getters de statics */
 int Banco::getqtdcliente() {
     return contcliente;
@@ -264,16 +313,18 @@ bool Banco::bissexto (int ano) {
 }
 /* Busca cpf na lista de clientes e retorna 1 se encontrou */
 int Banco::buscaClientecpf(std::string cpf) {
+    int i = 0;
     listaClientes *aux = clientes->prox; //pula o nó cabeça da lista
     //procura se o cpf inserido está cadastrado
 	while (aux != NULL && aux->cliente_atual->get_cpf().compare(cpf) != 0) {
 		aux = aux->prox;
+		i++;
 	}
     if (aux == NULL) {
         std::cout << "CPF nao encontrado." << '\n';
         return 0;
     }
-    return 1;
+    return (i+1);
 }
 
 int Banco::buscaContaNum(std::string numeroBusca) {

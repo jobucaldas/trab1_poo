@@ -22,11 +22,14 @@ class Banco
     public:
         Banco();
         ~Banco();
-        /* Adiciona e remove clientes/contas. */
+
+        /* Adiciona/remove/altera clientes/contas. */
         void add_cliente();
         void add_conta();
-        void rmv_cliente(listaClientes *);
-        void rmv_conta(listaContas *);
+        void rmv_cliente(std::string);
+        void rmv_conta(std::string);
+        void rmv_conta_cpf(std::string);
+        void set_cliente(std::string);
 
         /* Método toString */
         std::string toString() const;
@@ -43,6 +46,7 @@ class Banco
 
         //procura uma conta para fazer lancamento
         void novoLancamento(std::string, float, int);
+
 
     private:
         listaClientes *clientes; //Lista de clientes;

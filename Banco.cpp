@@ -46,7 +46,7 @@ Banco::~Banco() {
     contas->prox = NULL;
 }
 
-/* MÈtodos */
+/* M√©todos */
 
 void Banco::add_conta()
 {
@@ -56,7 +56,7 @@ void Banco::add_conta()
     while (aux->prox != NULL) {
         aux = aux->prox;
     }
-    //Inicializa vari·veis da conta;
+    //Inicializa vari√°veis da conta;
     std::string numero_conta, data, cpf;
     int dia, mes, ano;
     float saldo;
@@ -64,7 +64,7 @@ void Banco::add_conta()
     std::cout << "Digite o numero da conta: " << "\n";
     std::cin >> numero_conta;
 
-    //Cria uma conta nova(se for v·lido);
+    //Cria uma conta nova(se for v√°lido);
     if (is_valid_numConta(numero_conta)) {
         do {
             std::cout << "Digite os dados da conta: " << "\n" << "CPF (ja cadastrado): ";
@@ -90,10 +90,10 @@ void Banco::add_conta()
 
 void Banco::add_cliente()
 {
-    /* Vari·veis para cadastro de cliente */
+    /* Vari√°veis para cadastro de cliente */
     std::string cpf, nome, endereco, email, telefone;
 
-    /* AvanÁa para a ˙ltima posiÁ„o da lista de clientes */
+    /* Avan√ßa para a √∫ltima posi√ß√£o da lista de clientes */
     listaClientes *aux = this->clientes;
     listaClientes *novo = (listaClientes *) malloc(sizeof(listaClientes));
     while (aux->prox != NULL) {
@@ -183,7 +183,6 @@ void Banco::rmv_cliente(std::string retirar) {
         atual = atual->prox;
     }
     if (atual != NULL) {
-        morta = (listaClientes *) malloc (sizeof(listaClientes));
         morta = atual;
         anterior->prox = morta->prox;
         free(morta);
@@ -199,7 +198,6 @@ void Banco::rmv_conta(std::string retirar) {
         atual = atual->prox;
     }
     if (atual != NULL) {
-        morta = (listaContas *) malloc (sizeof(listaContas));
         morta = atual;
         anterior->prox = morta->prox;
         free(morta);
@@ -214,7 +212,6 @@ void Banco::rmv_conta_cpf(std::string retirar) {
     while (atual != NULL) {
         flag = 0;
         if (atual->conta_atual->getCPF().compare(retirar) == 0 && atual != NULL) {
-            morta = (listaContas *) malloc (sizeof(listaContas));
             morta = atual;
             anterior->prox = morta->prox;
             free(morta);
@@ -285,9 +282,9 @@ const bool Banco::is_valid_email(std::string email){
 const bool Banco::is_valid_cpf(std::string cpf){
 	int i, repeated = 0;
     listaClientes *aux = clientes;
-    aux = aux->prox; //Pula o nÛ cabeÁa da lista;
-	// Procura se h· algum cpf repetido na lista;
-	for(i = 0; i < Cliente::num_clientes || aux != NULL; i++){
+    aux = aux->prox; //Pula o n√≥ cabe√ßa da lista;
+	// Procura se h√° algum cpf repetido na lista;
+	for(i = 0; i < Cliente::num_clientes && aux != NULL; i++){
         if(aux->cliente_atual->get_cpf() == cpf){
 			repeated = 1;
 			break;
@@ -314,8 +311,8 @@ bool Banco::bissexto (int ano) {
 /* Busca cpf na lista de clientes e retorna 1 se encontrou */
 int Banco::buscaClientecpf(std::string cpf) {
     int i = 0;
-    listaClientes *aux = clientes->prox; //pula o nÛ cabeÁa da lista
-    //procura se o cpf inserido est· cadastrado
+    listaClientes *aux = clientes->prox; //pula o n√≥ cabe√ßa da lista
+    //procura se o cpf inserido est√° cadastrado
 	while (aux != NULL && aux->cliente_atual->get_cpf().compare(cpf) != 0) {
 		aux = aux->prox;
 		i++;
@@ -338,8 +335,8 @@ int Banco::buscaContaNum(std::string numeroBusca) {
         std::cout << "Conta nao encontrada." << '\n';
         return 0;
     }
-    //retorna o numero de passos, a partir do inicio, atÈ encontrar a conta
-    //com o numero em quest„o
+    //retorna o numero de passos, a partir do inicio, at√© encontrar a conta
+    //com o numero em quest√£o
     return (i+1);
 }
 

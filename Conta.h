@@ -1,38 +1,48 @@
 #ifndef CONTA_H
 #define CONTA_H
+
+#include <iostream>
 #include <string>
+#include <stdlib.h>
+#include "Data.h"
+
+typedef struct lancamentos {
+    float valor;
+    struct lancamentos *prox;
+} Lancamentos;
 
 class Conta
 {
     public:
-        Conta(Conta *, int, std::string, std::string, int, int, int float);
+        /* Construtor e destrutor */
+        Conta(const std::string, const std::string, const Data, float);
         ~Conta();
-        int is_valid_conta(std::string, Conta *, int);
 
-        //metodos get
-        std::string getNum();
-        std::string getCPF();
-        std::string getData();
+        /* Métodos get */
+        std::string getNum() const;
+        std::string getCPF() const;
+        std::string getData() const;
         float getSaldo();
+        Lancamentos *getCabeca(); //Lista de lançamentos;
+        void getLancamentos(Lancamentos *); //Extrato da conta;
+        void printSaldo();
 
-        //metodos set
-        void setSaldo(float);
+        /* Método toString */
+        std::string toString() const;
 
+        /* Métodos set */
+        void updateSaldo(float, int);
+        void novoLancamento(Lancamentos *, float, int);
+
+        /* Contador para número de contas */
         static int num_contas;
 
-        bool is_valid_data();
-        
-
-    protected:
-
     private:
-        std::string cpf;
-        std::string num_conta;
-        std::string data_abertura;
+        const std::string cpf;
+        const std::string num_conta;
+        const Data data_abertura;
         float saldo_atual;
-        int dia, mes, ano;
-        void inttostr();
-        bool bissexto();
+        Lancamentos *cabeca; //Cabeça da lista de lançamentos;
 };
 
 #endif // CONTA_H

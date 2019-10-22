@@ -53,6 +53,7 @@ class Banco
         //validators cliente
         const bool is_valid_email(std::string);
         const bool is_valid_cpf(std::string);
+        const bool is_valid_cnpj(std::string);
 
         //auxiliary functions
         std::string intToStr(int, int, int);

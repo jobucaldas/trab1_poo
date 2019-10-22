@@ -1,6 +1,8 @@
 #include "Banco.h"
 #include "Cliente.h"
 #include "Conta.h"
+#include "PessoaFisica.h"
+#include "PessoaJuridica.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -62,12 +64,30 @@ void Banco::add_conta()
         std::cout << "Numero ja utilizado. Tente novamente." << "\n";
 }
 
+const bool Banco::is_valid_cnpj(std::string cnpj)
+{
+    std::string test1 = "/", test2 = "-";
+	return (cnpj.find(test1)!= std::string::npos && cnpj.find(test2) != std::string::npos
+            && cnpj.size() == 16) ? true : false;
+}
+
 void Banco::add_cliente()
 {
+    int opcaoCliente;
     /* Variáveis para cadastro de cliente */
     std::string cpf, nome, endereco, email, telefone;
 
-    std::cout << "Cadastrando cliente..." << std::endl << "Insira dados:" << '\n' << "CPF: ";
+    std::cout << "Cadastrando cliente..." << std::endl;
+	do {
+        std::cout << "Escolha o tipo de cliente: (1- Pessoa Fisica|2- Pessoa Juridica)" << '\n';
+		std::cin >> opcaoCliente;
+		if (opcaoCliente != 1 && opcaoCliente != 2)
+			std::cout << "Opcao indisponivel." << '\n';
+	} while (opcaoCliente != 1 && opcaoCliente != 2);
+
+    std::cout << "Cadastrando cliente..." << std::endl << "Insira dados:" << '\n';
+    if (opcaoCliente == 1) std::cout << "CPF: ";
+    else if (opcaoCliente == 2) std::cout << "CPF do socio majoritario: ";
 	do {
 		std::cin >> cpf;
 		if (!is_valid_cpf(cpf))
@@ -93,7 +113,35 @@ void Banco::add_cliente()
 	scanf("\n");
 	std::getline(std::cin, endereco);
 	//std::cout << endereco<<std::endl;
-    listaClientes.push_back( Cliente(nome, cpf, endereco, telefone, email) );
+	if (opcaoCliente == 1)
+        listaClientes.push_back( PessoaFisica(nome, cpf, endereco, telefone, email) );
+    else if (opcaoCliente == 2) {
+        int dia, mes, ano;
+        std::string cnpj, ramo, fundacao, contrato;
+        do {
+            std::cout << "CNPJ (formato: xxxxxxxx/xxxx-xx): ";
+            std::cin >> cnpj;
+		if (!is_valid_cnpj(cnpj))
+			std::cout << "CNPJ invalido ou ja utilizado. Tente novamente." << '\n';
+        } while (!is_valid_cnpj(cnpj));
+
+        std::cout << "Ramo de atuacao: ";
+        std::getline(std::cin, ramo);
+        do {
+            std::cout << "Data de fundacao, no formato: 'dia mes ano': ";
+            std::cin >> dia >> mes >> ano;
+        } while (is_valid_data(dia, mes, ano) == false);
+        fundacao = intToStr(dia, mes, ano);
+
+        do {
+            std::cout << "Data da ultima atualizacao do contrato social, no formato: 'dia mes ano': ";
+            std::cin >> dia >> mes >> ano;
+        } while (is_valid_data(dia, mes, ano) == false);
+        contrato = intToStr(dia, mes, ano);
+
+        listaClientes.push_back( PessoaJuridica(nome, cpf, endereco, telefone, email,
+                                                cnpj, ramo, fundacao, contrato) );
+    }
     contcliente++;
 }
 
@@ -210,7 +258,7 @@ bool Banco::is_valid_data(int dia, int mes, int ano) {
 }
 
 const bool Banco::is_valid_email(std::string email){
-	std::string test1 = "@", test2 = ".com";
+	std::string test1 = "@", test2 = ".";
 	return (email.find(test1)!= std::string::npos && email.find(test2) != std::string::npos) ? true : false;
 }
 

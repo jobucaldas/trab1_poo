@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <sstream>
+#include <list>
 
 /* Contador para número de contas */
 int Conta::num_contas = 0;
@@ -16,13 +17,7 @@ Conta::Conta(std::string CPF, std::string nconta,
             std::string data, float saldo) : cpf(CPF),
             num_conta(nconta), data_abertura(data)
 {
-
     this->saldo_atual = saldo;
-
-    /* Cria lista de lançamentos deste cliente */
-    this->cabeca = (Lancamentos *) malloc(sizeof(Lancamentos));
-    this->cabeca->prox = NULL;
-
     num_contas++;
 
     std::cout << "Conta criada com sucesso!" << std::endl;
@@ -53,26 +48,27 @@ float Conta::getSaldo()
     return this->saldo_atual;
 }
 
-Lancamentos * Conta::getCabeca()
-{
-    return this->cabeca;
-}
-
 void Conta::printSaldo()
 {
     std::cout << "Saldo atual: " << std::fixed << std::setprecision(2)
               << this->getSaldo() << "\n\n";
 }
-/* Mostra na tela histórico de lançamentos(extrato) */
-void Conta::getLancamentos(Lancamentos *cabeca)
+
+std::vector<float> Conta::getVector()
 {
-    Lancamentos *aux = cabeca->prox;
-    while (aux != NULL) {
+    return this->lancamentos;
+}
+
+/* Mostra na tela histórico de lançamentos(extrato) */
+void Conta::getLancamentos()
+{
+    std::vector<float>::iterator itr;
+    for (itr = this->lancamentos.begin(); itr != this->lancamentos.end(); itr++) {
         std::cout << "Lancamento: " << std::fixed << std::setprecision(2)
-                  << aux->valor << '\n';
-        aux = aux->prox;
+                  << *itr << '\n';
     }
-    std::cout << "Saldo final: " << std::fixed << std::setprecision(2) << this->saldo_atual;
+    std::cout << "Saldo final: " << std::fixed
+              << std::setprecision(2) << this->getSaldo();
     std::cout << std::endl;
 }
 
@@ -80,27 +76,29 @@ void Conta::getLancamentos(Lancamentos *cabeca)
 void Conta::updateSaldo(float valor, int operacao)
 {
     //operacao = 1: credito, operacao = 2: debito.
-    if (operacao == 1 || (operacao == 2 && this->saldo_atual - valor >= 0)) {
-        novoLancamento(this->cabeca, valor, operacao);
+    if (operacao == 2 && this->saldo_atual - valor >= 0) {
+        novoLancamento(valor, operacao);
         this->saldo_atual = this->saldo_atual - valor;
     }
+    else if (operacao == 1)
+        this->saldo_atual = this->saldo_atual + valor;
 }
 
 /* Atualiza a lista de lancamentos */
-
-void Conta::novoLancamento(Lancamentos *head, float valor, int operacao)
+void Conta::novoLancamento(float valor, int operacao)
 {
     //operacao = 1: credito, operacao = 2: debito
-    if (operacao == 1 || (operacao == 2 && this->saldo_atual - valor >= 0)) {
+    if (operacao == 2 && this->saldo_atual - valor >= 0) {
         this->saldo_atual -= valor;
-        Lancamentos *aux = cabeca;
-        Lancamentos *novo = (Lancamentos *) malloc(sizeof(Lancamentos));
-        novo->valor = valor;
-        while (aux->prox != NULL)
-            aux = aux->prox;
-        aux->prox = novo;
-        novo->prox = NULL;
+        valor *= (-1);
+        this->lancamentos.push_back(valor);
     }
+    else if (operacao == 1 && valor > 0) {
+        this->saldo_atual += valor;
+        this->lancamentos.push_back(valor);
+    }
+
+    else std::cout << "Operacao invalida." << '\n';
 }
 
 /* toString */

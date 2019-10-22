@@ -4,11 +4,7 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
-
-typedef struct lancamentos {
-    float valor;
-    struct lancamentos *prox;
-} Lancamentos;
+#include <vector>
 
 class Conta
 {
@@ -22,26 +18,26 @@ class Conta
         std::string getCPF() const;
         std::string getData() const;
         float getSaldo();
-        Lancamentos *getCabeca(); //Lista de lançamentos;
-        void getLancamentos(Lancamentos *); //Extrato da conta;
+        void getLancamentos(); //Extrato da conta;
         void printSaldo();
-
-        /* Método toString */
+        std::vector<float> getVector();
+        /* Metodo toString */
         std::string toString() const;
 
-        /* Métodos set */
+        /* Metodos set */
         void updateSaldo(float, int);
-        void novoLancamento(Lancamentos *, float, int);
+        void novoLancamento(float, int);
 
-        /* Contador para número de contas */
+        /* Contador para numero de contas */
         static int num_contas;
 
     private:
+        std::vector<float> lancamentos;
+
         const std::string cpf;
         const std::string num_conta;
         const std::string data_abertura;
         float saldo_atual;
-        Lancamentos *cabeca; //Cabeça da lista de lançamentos;
 };
 
 #endif // CONTA_H

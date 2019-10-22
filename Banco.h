@@ -5,16 +5,7 @@
 #include "Cliente.h"
 #include "Conta.h"
 #include <string>
-
-typedef struct contas {
-    Conta *conta_atual;
-    struct contas *prox;
-} listaContas;
-
-typedef struct clientes {
-    Cliente *cliente_atual;
-    struct clientes *prox;
-} listaClientes;
+#include <list>
 
 /* Classe para gerir o banco. */
 class Banco
@@ -49,17 +40,17 @@ class Banco
 
 
     private:
-        listaClientes *clientes; //Lista de clientes;
-        listaContas *contas; //Lista de contas;
+        std::list<Conta> listaContas;
+        std::list<Cliente> listaClientes;
 
         static int contcliente;
         static int contconta;
 
-        //validators conta//
+        //validators conta
         bool is_valid_numConta(std::string);
         bool is_valid_data(int, int, int);
 
-        // Validators cliente
+        //validators cliente
         const bool is_valid_email(std::string);
         const bool is_valid_cpf(std::string);
 

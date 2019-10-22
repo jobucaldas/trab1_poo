@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <list>
 
 #include "Conta.h"
 #include "Cliente.h"
@@ -48,7 +49,6 @@ int main()
                 cout << "Digite o CPF:" << '\n';
                 cin >> cpf;
                 banco.rmv_cliente(cpf);
-                banco.rmv_conta_cpf(cpf);
                 cout << '\n';
                 break;
             }

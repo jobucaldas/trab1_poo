@@ -34,7 +34,7 @@ private:
 	std::string telefone;
 	std::string email;
 
-	// Private Setters
+	//Private Setters
 	void set_cpf(std::string);
 	void set_nome(std::string);
 	void set_endereco(std::string);

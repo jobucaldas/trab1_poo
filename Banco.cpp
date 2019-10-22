@@ -13,50 +13,26 @@ int Banco::contcliente = 0;
 int Banco::contconta = 0;
 
 Banco::Banco() {
-    contas = (listaContas *) malloc(sizeof(listaContas)); //Inicializa lista de contas.
-    contas->prox = NULL;
-    clientes = (listaClientes *) malloc(sizeof(listaClientes));
-    clientes->prox = NULL;
 }
 
 Banco::~Banco() {
 
     /* Libera todas as contas */
-    listaContas *aux = contas->prox;
-    listaContas *remover;
-    remover = (listaContas *) malloc(sizeof(listaContas));
-    while (aux != NULL) {
-        remover = aux;
-        aux = remover->prox;
-        free(remover);
-        contconta--;
+    while (!listaContas.empty()) {
+        listaContas.pop_back();
     }
-    contas->prox = NULL;
 
     /* Libera todos os clientes */
-    listaClientes *aux1 = clientes->prox;
-    listaClientes *remover1;
-    remover1 = (listaClientes *) malloc(sizeof(listaClientes));
-    while (aux1 != NULL) {
-        remover1 = aux1;
-        aux1 = remover1->prox;
-        free(remover1);
-        contcliente--;
+    while (!listaClientes.empty()) {
+        listaClientes.pop_back();
     }
-    contas->prox = NULL;
 }
 
-/* Métodos */
+/* M�todos */
 
 void Banco::add_conta()
 {
-    //Guarda conta no fim da lista;
-    listaContas *aux = this->contas;
-    listaContas *novo = (listaContas *) malloc(sizeof(listaContas));
-    while (aux->prox != NULL) {
-        aux = aux->prox;
-    }
-    //Inicializa variáveis da conta;
+    //Inicializa vari�veis da conta;
     std::string numero_conta, data, cpf;
     int dia, mes, ano;
     float saldo;
@@ -64,12 +40,12 @@ void Banco::add_conta()
     std::cout << "Digite o numero da conta: " << "\n";
     std::cin >> numero_conta;
 
-    //Cria uma conta nova(se for válido);
+    //Cria uma conta nova(se for v�lido);
     if (is_valid_numConta(numero_conta)) {
         do {
             std::cout << "Digite os dados da conta: " << "\n" << "CPF (ja cadastrado): ";
             std::cin >> cpf;
-        } while (!buscaClientecpf(cpf));
+        } while (buscaClientecpf(cpf) < 0);
 
         do {
             std::cout << "Data de abertura, no formato: 'dia mes ano': " << "\n";
@@ -79,9 +55,7 @@ void Banco::add_conta()
 
         std::cout << "Saldo inicial:" << "\n";
         std::cin >> saldo;
-        novo->conta_atual = new Conta(cpf, numero_conta, data, saldo);
-        aux->prox = novo;
-        novo->prox = NULL;
+        listaContas.push_back( Conta(cpf, numero_conta, data, saldo) );
         contconta++;
     }
     else
@@ -90,15 +64,9 @@ void Banco::add_conta()
 
 void Banco::add_cliente()
 {
-    /* Variáveis para cadastro de cliente */
+    /* Vari�veis para cadastro de cliente */
     std::string cpf, nome, endereco, email, telefone;
 
-    /* Avança para a última posição da lista de clientes */
-    listaClientes *aux = this->clientes;
-    listaClientes *novo = (listaClientes *) malloc(sizeof(listaClientes));
-    while (aux->prox != NULL) {
-        aux = aux->prox;
-    }
     std::cout << "Cadastrando cliente..." << std::endl << "Insira dados:" << '\n' << "CPF: ";
 	do {
 		std::cin >> cpf;
@@ -125,28 +93,24 @@ void Banco::add_cliente()
 	scanf("\n");
 	std::getline(std::cin, endereco);
 	//std::cout << endereco<<std::endl;
-    novo->cliente_atual = new Cliente(nome, cpf, endereco, telefone, email);
-    aux->prox = novo;
-    novo->prox = NULL;
+    listaClientes.push_back( Cliente(nome, cpf, endereco, telefone, email) );
     contcliente++;
-
 }
 
 void Banco::get_clientes()
 {
-    listaClientes *aux = this->clientes->prox;
-    while (aux != NULL) {
-        std::cout << aux->cliente_atual->toString() << "\n";
-        aux = aux->prox;
-    }
+    std::list<Cliente>::iterator itr;
+    for (itr = listaClientes.begin(); itr != listaClientes.end(); itr++)
+        std::cout << (*itr).toString() << "\n";
 }
+
 
 void Banco::set_cliente(std::string busca)
 {
     int numPassos = buscaClientecpf(busca);
-    listaClientes * aux = this->clientes;
+    std::list<Cliente>::iterator itr = listaClientes.begin();
     for (int i = 0; i < numPassos; i++)
-        aux = aux->prox;
+        itr++;
     std::string nome, endereco, telefone, email;
     std::cout << "Digite os dados do cliente: " << '\n'
               << "Nome: ";
@@ -163,67 +127,40 @@ void Banco::set_cliente(std::string busca)
     std::cout << "Endereco: ";
     scanf("\n");
     std::getline(std::cin, endereco);
-    aux->cliente_atual->set_cliente(nome, busca, endereco, telefone, email);
+    itr->set_cliente(nome, busca, endereco, telefone, email);
 }
 
 void Banco::get_contas()
 {
-    listaContas *aux = this->contas->prox;
-    while (aux != NULL) {
-        std::cout << aux->conta_atual->toString() << "\n";
-        aux = aux->prox;
-    }
+    std::list<Conta>::iterator itr;
+
+    for (itr = listaContas.begin(); itr != listaContas.end(); itr++)
+        std::cout << itr->toString() << "\n";
 }
 
 void Banco::rmv_cliente(std::string retirar) {
-    listaClientes *atual = clientes->prox, *anterior = clientes, *morta;
+    std::list<Cliente>::iterator itr;
 
-    while (atual != NULL && atual->cliente_atual->get_cpf().compare(retirar) != 0) {
-        anterior = atual;
-        atual = atual->prox;
+    for (itr = listaClientes.begin(); itr != listaClientes.end()
+    && itr->get_cpf().compare(retirar) != 0; itr++) {
+        ;
     }
-    if (atual != NULL) {
-        morta = atual;
-        anterior->prox = morta->prox;
-        free(morta);
+    if (itr != listaClientes.end()) {
+        listaClientes.erase(itr);
         contcliente--;
     }
 }
 
 void Banco::rmv_conta(std::string retirar) {
-    listaContas *atual = contas->prox, *anterior = contas, *morta;
+    std::list<Conta>::iterator itr;
 
-    while (atual != NULL && atual->conta_atual->getNum().compare(retirar) != 0) {
-        anterior = atual;
-        atual = atual->prox;
+    for (itr = listaContas.begin(); itr != listaContas.end()
+    && itr->getNum().compare(retirar) != 0; itr++) {
+        ;
     }
-    if (atual != NULL) {
-        morta = atual;
-        anterior->prox = morta->prox;
-        free(morta);
+    if (itr != listaContas.end()) {
+        listaContas.erase(itr);
         contconta--;
-    }
-}
-
-//remove as contas vinculadas a um cliente
-void Banco::rmv_conta_cpf(std::string retirar) {
-    listaContas *atual = contas->prox, *anterior = contas, *morta;
-    int flag;
-    while (atual != NULL) {
-        flag = 0;
-        if (atual->conta_atual->getCPF().compare(retirar) == 0 && atual != NULL) {
-            morta = atual;
-            anterior->prox = morta->prox;
-            free(morta);
-            contconta--;
-            atual = anterior->prox;
-            flag = 1;
-        }
-        //verifica se ja excluiu uma conta
-        if (!flag) {
-            anterior = atual;
-            atual = atual->prox;
-        }
     }
 }
 
@@ -247,12 +184,10 @@ std::string Banco::toString() const{
 
 bool Banco::is_valid_numConta(std::string numero)
 {
-    listaContas *aux = this->contas->prox;
-    while (aux != NULL) {
-        if (aux->conta_atual->getNum().compare(numero) == 0)
+    std::list<Conta>::iterator itr;
+    for (itr = listaContas.begin(); itr != listaContas.end(); itr++)
+        if (itr->getNum().compare(numero) == 0)
             return false;
-        aux = aux->prox;
-    }
     return true;
 }
 
@@ -281,15 +216,14 @@ const bool Banco::is_valid_email(std::string email){
 
 const bool Banco::is_valid_cpf(std::string cpf){
 	int i, repeated = 0;
-    listaClientes *aux = clientes;
-    aux = aux->prox; //Pula o nó cabeça da lista;
-	// Procura se há algum cpf repetido na lista;
-	for(i = 0; i < Cliente::num_clientes && aux != NULL; i++){
-        if(aux->cliente_atual->get_cpf() == cpf){
+	std::list<Cliente>::iterator itr;
+	// Procura se h� algum cpf repetido na lista;
+	for (i = 0; i < Cliente::num_clientes && itr != listaClientes.end(); i++){
+        if(itr->get_cpf() == cpf){
 			repeated = 1;
 			break;
 		}
-		aux = aux->prox;
+		itr++;
 	}
 	return (cpf.length() == 11 && !repeated) ? true : false;
 }
@@ -310,62 +244,63 @@ bool Banco::bissexto (int ano) {
 }
 /* Busca cpf na lista de clientes e retorna 1 se encontrou */
 int Banco::buscaClientecpf(std::string cpf) {
+    std::list<Cliente>::iterator itr;
     int i = 0;
-    listaClientes *aux = clientes->prox; //pula o nó cabeça da lista
-    //procura se o cpf inserido está cadastrado
-	while (aux != NULL && aux->cliente_atual->get_cpf().compare(cpf) != 0) {
-		aux = aux->prox;
+    //procura se o cpf inserido est� cadastrado
+	for (itr = listaClientes.begin(); itr != listaClientes.end() && itr->get_cpf().compare(cpf) != 0; itr++) {
 		i++;
 	}
-    if (aux == NULL) {
+    if (itr == listaClientes.end()) {
         std::cout << "CPF nao encontrado." << '\n';
-        return 0;
+        return -1;
     }
-    return (i+1);
+    return i;
 }
 
 int Banco::buscaContaNum(std::string numeroBusca) {
-    listaContas * aux = contas->prox;
+    std::list<Conta>::iterator itr;
     int i = 0;
-    while (aux != NULL && aux->conta_atual->getNum().compare(numeroBusca) != 0) {
-        aux = aux->prox;
+    for (itr = listaContas.begin(); itr != listaContas.end() && itr->getNum().compare(numeroBusca) != 0; itr++) {
         i++;
     }
-    if (aux == NULL) {
+    if (itr == listaContas.end()) {
         std::cout << "Conta nao encontrada." << '\n';
-        return 0;
+        return -1;
     }
-    //retorna o numero de passos, a partir do inicio, até encontrar a conta
-    //com o numero em questão
-    return (i+1);
+    //retorna o numero de passos, a partir do inicio, at� encontrar a conta
+    //com o numero em quest�o
+    return i;
 }
 
 void Banco::novoLancamento(std::string numeroBusca, float valor, int operacao)
 {
-    listaContas * aux = this->contas;
-    for (int i = 0; i < this->buscaContaNum(numeroBusca); i++) {
-        aux = aux->prox;
+    std::list<Conta>::iterator itr = listaContas.begin();
+    int aux = this->buscaContaNum(numeroBusca);
+    for (int i = 0; i < aux; i++) {
+        itr++;
     }
-    aux->conta_atual->novoLancamento(aux->conta_atual->getCabeca(), valor, operacao);
+    if (aux != -1) {
+        itr->novoLancamento(valor, operacao);
+    }
 }
 
 void Banco::get_lancamento(std::string numeroBusca) {
-    listaContas * aux = this->contas;
+    std::list<Conta>::iterator itr = listaContas.begin();
     int numeroIteracoes = this->buscaContaNum(numeroBusca);
+
     for (int i = 0; i < numeroIteracoes; i++) {
-        aux = aux->prox;
+        itr++;
     }
-    if (aux != contas)
-        aux->conta_atual->getLancamentos(aux->conta_atual->getCabeca());
+    if ( numeroIteracoes != -1 )
+        itr->getLancamentos();
 }
 
 void Banco::get_montante()
 {
-    listaContas * aux = contas->prox;
+    std::list<Conta>::iterator itr;
     float montante = 0;
-    while (aux != NULL) {
-        montante += aux->conta_atual->getSaldo();
-        aux = aux->prox;
+    for (itr = listaContas.begin(); itr != listaContas.end(); itr++) {
+        montante += itr->getSaldo();
     }
     std::cout << "Montante do banco: " << std::fixed << std::setprecision(2) << montante << '\n';
 }

@@ -3,6 +3,8 @@
 #include "Conta.h"
 #include "PessoaFisica.h"
 #include "PessoaJuridica.h"
+#include "ContaCorrente.h"
+#include "ContaPoupanca.h"
 #include "Data.h"
 #include <string>
 #include <sstream>
@@ -149,9 +151,14 @@ void Banco::add_cliente()
 
 void Banco::get_clientes()
 {
-    std::list<Cliente>::iterator itr;
-    for (itr = listaClientes.begin(); itr != listaClientes.end(); itr++)
+	std::cout << "\n\nPESSOAS FISICAS\n\n";
+    std::list<PessoaFisica>::iterator itr;
+    for (itr = listaClientes_f.begin(); itr != listaClientes_f.end(); itr++)
         std::cout << (*itr).toString() << "\n";
+	std::cout << "\n\nPESSOAS JURIDICAS\n\n";
+	std::list<PessoaJuridica>::iterator it;
+	for (it = listaClientes_j.begin(); it != listaClientes_j.end(); it++)
+		std::cout << (*it).toString() << "\n";
 }
 
 
@@ -182,10 +189,14 @@ void Banco::set_cliente(std::string busca)
 
 void Banco::get_contas()
 {
-    std::list<Conta>::iterator itr;
-
-    for (itr = listaContas.begin(); itr != listaContas.end(); itr++)
+    std::list<ContaCorrente>::iterator itr;
+	std::cout << "\n\nCONTAS CORRENTES\n\n"
+    for (itr = listaContas_c.begin(); itr != listaContas_c.end(); itr++)
         std::cout << itr->toString() << "\n";
+	std::list<ContaPoupanca>::iterator it;
+	std::cout<< "\n\nCONTAS POUPANCAS\n\n"
+	for (it = listaContas_p.begin(); it != listaContas_p.end(); it++)
+		std::cout << it->toString() << "\n";
 }
 
 void Banco::rmv_cliente(std::string retirar) {
@@ -284,30 +295,70 @@ bool Banco::bissexto (int ano) {
         return true;
     return false;
 }
-/* Busca cpf na lista de clientes e retorna 1 se encontrou */
-int Banco::buscaClientecpf(std::string cpf) {
-    std::list<Cliente>::iterator itr;
-    int i = 0;
-    //procura se o cpf inserido est� cadastrado
-	for (itr = listaClientes.begin(); itr != listaClientes.end() && itr->get_cpf().compare(cpf) != 0; itr++) {
+
+int Banco::buscaCliente_cnpj(std::string cpf) {
+	std::list<PessoaJuridica>::iterator itr;
+	int i = 0;
+	//procura se o cpf inserido est� cadastrado
+	for (itr = listaClientes_j.begin(); itr != listaClientes_j.end() && itr->get_cpf().compare(cpf) != 0; itr++) {
 		i++;
 	}
-    if (itr == listaClientes.end()) {
+	
+	if (itr == listaClientes_j.end() ) {
+		std::cout << "CNPJ nao encontrado." << '\n';
+		return -1;
+	}
+
+	return i;
+}
+
+/* Busca cpf na lista de clientes e retorna 1 se encontrou */
+int Banco::buscaCliente_cpf(std::string cpf) {
+    std::list<PessoaJuridica>::iterator itr;
+    int i = 0;
+    //procura se o cpf inserido est� cadastrado
+	for (itr = listaClientes_j.begin(); itr != listaClientes_j.end() && itr->get_cpf().compare(cpf) != 0; itr++) {
+		i++;
+	}
+	std::list<PessoaFisica>::iterator it;
+	int j = 0;
+	//procura se o cpf inserido est� cadastrado
+	for (itr = listaClientes_f.begin(); it != listaClientes_f.end() && it->get_cpf().compare(cpf) != 0; it++) {
+		j++;
+	}
+    if (itr == listaClientes_j.end()&& it == listaClientes_f.end) {
         std::cout << "CPF nao encontrado." << '\n';
         return -1;
     }
-    return i;
+
+    return (i== listaClientes_f.end()?j:i);
 }
 
-int Banco::buscaContaNum(std::string numeroBusca) {
-    std::list<Conta>::iterator itr;
+int Banco::buscaContaNum_c(std::string numeroBusca) {
+	std::list<ContaCorrente>::iterator it;
+	int  j = 0;
+	for (it = listaContas_c.begin(); it != listaContas_c.end() && it->getNum().compare(numeroBusca) != 0; it++) {
+		j++;
+	}
+	if ( it == listaContas_c.end()) {
+		std::cout << "Conta nao encontrada." << '\n';
+		return -1;
+	}
+	//retorna o numero de passos, a partir do inicio, ate encontrar a conta
+	//com o numero em questao
+	return i;
+}
+
+int Banco::buscaContaNum_p(std::string numeroBusca) {
+    std::list<ContaPoupanca>::iterator itr;
+	std::list<ContaCorrente>::iterator it;
     int i = 0;
-    for (itr = listaContas.begin(); itr != listaContas.end() && itr->getNum().compare(numeroBusca) != 0; itr++) {
+    for (itr = listaContas_p.begin(); itr != listaContas_p.end() && itr->getNum().compare(numeroBusca) != 0; itr++) {
         i++;
     }
-    if (itr == listaContas.end()) {
+    if (itr == listaContas_p.end()) {
         std::cout << "Conta nao encontrada." << '\n';
-        return -1;
+		return -1;
     }
     //retorna o numero de passos, a partir do inicio, ate encontrar a conta
     //com o numero em questao
@@ -339,10 +390,14 @@ void Banco::get_lancamento(std::string numeroBusca) {
 
 void Banco::get_montante()
 {
-    std::list<Conta>::iterator itr;
+    std::list<ContaPoupanca>::iterator itr;
     float montante = 0;
-    for (itr = listaContas.begin(); itr != listaContas.end(); itr++) {
+    for (itr = listaContas_p.begin(); itr != listaContas_p.end(); itr++) {
         montante += itr->getSaldo();
     }
+	std::list<ContaCorrente>::iterator it;
+	for (it = listaContas_c.begin(); it != listaContas_c.end(); it++) {
+		montante += it->getSaldo();
+	}
     std::cout << "Montante do banco: " << std::fixed << std::setprecision(2) << montante << '\n';
 }

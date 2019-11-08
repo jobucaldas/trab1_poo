@@ -1,5 +1,6 @@
 #include "Cliente.h"
 #include <sstream>
+#include <iostream>
 
 int Cliente::num_clientes = 0;
 

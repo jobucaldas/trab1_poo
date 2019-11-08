@@ -21,7 +21,7 @@ public:
 	const std::string get_email();
 
 	//toString
-	const std::string toString();
+	virtual std::string toString() const = 0;
 
 	//Static for count number of clients;
 	static int num_clientes;
@@ -34,7 +34,7 @@ private:
 	std::string telefone;
 	std::string email;
 
-	// Private Setters
+	//Private Setters
 	void set_cpf(std::string);
 	void set_nome(std::string);
 	void set_endereco(std::string);

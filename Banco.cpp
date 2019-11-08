@@ -32,6 +32,22 @@ Banco::~Banco() {
 
 /* Metodos */
 
+bool Banco::is_ContaCorrente() {
+	int i;
+	do {
+		std::cout << "Digite o tipo de Conta: \n1-Conta Corrente|2-Conta Poupanca\n";
+	} while (i != 1 && i != 2);
+	return(i == 1);
+}
+
+bool Banco::is_Juridico() {
+	int i;
+	do {
+		std::cout << "Digite o tipo de Cliente: \n1-Pessoa Juridica|2-Pessoa Fisica\n";
+	} while (i != 1 && i != 2);
+	return(i == 1);
+}
+
 void Banco::add_conta_c()
 {
     //Inicializa variaveis da conta;
@@ -343,8 +359,10 @@ void Banco::rmv_conta(std::string retirar) {
 
 std::string Banco::toString() const{
     std::stringstream format;
-    format << "Quantidade de clientes cadastrados no banco: " << this->contcliente <<
-        std::endl << "Quantidade de contas cadastradas: " << this->contconta << std::endl;
+    format << "Quantidade de clientes cadastrados no banco: " << PessoaFisica::count_f+PessoaJuridica::count_j <<
+        std::endl << "Pessoas Fisicas: "<< PessoaFisica::count_f<< "\nPessoas Juridicas: " << PessoaJuridica::count_j<<
+		"\nQuantidade de contas cadastradas: " << ContaCorrente::count_chain+ContaPoupanca::count_poup << std::endl<<
+		"\nContas Correntes: "<<ContaCorrente::count_chain<<"\nContas Poupancas"<<ContaPoupanca::count_poup<< std::endl;
     return format.str();
 }
 
@@ -504,10 +522,10 @@ int Banco::buscaContaNum_p(std::string numeroBusca) {
     return i;
 }
 
-void Banco::novoLancamento(std::string numeroBusca, float valor, int operacao)
+void Banco::novoLancamento_c(std::string numeroBusca, float valor, int operacao)
 {
-    std::list<Conta>::iterator itr = listaContas.begin();
-    int aux = this->buscaContaNum(numeroBusca);
+    std::list<ContaCorrente>::iterator itr = listaContas_c.begin();
+    int aux = this->buscaContaNum_c(numeroBusca);
     for (int i = 0; i < aux; i++) {
         itr++;
     }
@@ -516,15 +534,38 @@ void Banco::novoLancamento(std::string numeroBusca, float valor, int operacao)
     }
 }
 
-void Banco::get_lancamento(std::string numeroBusca) {
-    std::list<Conta>::iterator itr = listaContas.begin();
-    int numeroIteracoes = this->buscaContaNum(numeroBusca);
+void Banco::novoLancamento_p(std::string numeroBusca, float valor, int operacao)
+{
+	std::list<ContaCorrente>::iterator itr = listaContas_p.begin();
+	int aux = this->buscaContaNum_p(numeroBusca);
+	for (int i = 0; i < aux; i++) {
+		itr++;
+	}
+	if (aux != -1) {
+		itr->novoLancamento(valor, operacao);
+	}
+}
+
+void Banco::get_lancamento_p(std::string numeroBusca) {
+    std::list<ContaPoupanca>::iterator itr = listaContas_p.begin();
+    int numeroIteracoes = this->buscaContaNum_p(numeroBusca);
 
     for (int i = 0; i < numeroIteracoes; i++) {
         itr++;
     }
     if ( numeroIteracoes != -1 )
         itr->getLancamentos();
+}
+
+void Banco::get_lancamento_c(std::string numeroBusca) {
+	std::list<ContaCorrente>::iterator itr = listaContas_c.begin();
+	int numeroIteracoes = this->buscaContaNum_c(numeroBusca);
+
+	for (int i = 0; i < numeroIteracoes; i++) {
+		itr++;
+	}
+	if (numeroIteracoes != -1)
+		itr->getLancamentos();
 }
 
 void Banco::get_montante()
